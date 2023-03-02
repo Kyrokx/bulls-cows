@@ -9,5 +9,5 @@
 
 
 ![img1](./assets/screen1.png "Titre de l'image")
-![img2](./assets/screen2.png "Titre de l'image")
+![img2](./assets/sreen2.png "Titre de l'image")
 ![img3](./assets/screen3.png "Titre de l'image")
