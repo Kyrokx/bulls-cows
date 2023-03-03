@@ -206,7 +206,7 @@ class JeuState extends State<Jeu> {
     if (tentatives == 60) {
       alert(
           "⛔ | Erreur",
-          "Vous avez atteint 10 tentatives. Vous avez perdu ! Le nombre mystère etait ${guess_numbers_choised}",
+          "Vous avez atteint 60 tentatives. Vous avez perdu ! Le nombre mystère etait ${guess_numbers_choised}",
           true);
     } else if (bulls == 4) {
       alert(
