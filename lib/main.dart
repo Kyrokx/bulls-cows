@@ -1,8 +1,26 @@
+import 'dart:ui';
+
+import 'package:bulls_and_cows/home.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 
+import 'connection.dart';
 import 'jeu.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
+  FlutterError.onError = (errorDetails) {
+    FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+  };
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack);
+    return true;
+  };
+
   runApp(const MyApp());
 }
 
@@ -16,103 +34,23 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.amber,
       ),
-      routes: {
-        '/': (context) => MyHomePage(),
+      /*routes: {
+        '/': (context) => MyApp(),
         '/jeu': (context) => Jeu(),
-      },
+        '/home' : (context) => Home(),
+      },*/
       debugShowCheckedModeBanner: false,
-      initialRoute: '/',
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("🐮 Bulls and Cows"),
-        centerTitle: true,
-        elevation: 10.0,
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Text(
-              "BIENVENUE SUR LE JEU 🐮 (meuuuh)",
-              style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 3.0),
-            ),
-            SizedBox(
-              width: 512 / 2,
-              height: 512 / 2,
-              child: Image.asset("assets/bull.png"),
-            ),
-            Divider(
-              thickness: 10.0,
-              indent: 50.0,
-              endIndent: 50.0,
-              color: Colors.amber.shade900,
-            ),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  alert("📖 | Règle",
-                      "L'algorithme génère automatiquement un nombre aléatoire à 4 chiffres.\nLe but est de retrouver ce nombre si dans votre proposotion un chiffre est à la bonne place alors il renvera 'bulls' si le chiffre est mal placé 'cows' et le chiffre est incorrect rien du tout\n\n Le jeu s'arrête à 60 tentatives");
-                });
-              },
-              child: Text("Règles"),
-            ),
-            ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    Navigator.pushNamed(context, '/jeu');
-                  });
-                },
-                child: Text("Commencer")),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Future<void> alert(
-      title,
-      msg,
-      ) async {
-    Widget cancelButton = TextButton(
-      child: Text(
-        "Ok",
-        style: TextStyle(color: Colors.amberAccent),
-      ),
-      onPressed: () {
-        setState(() {
-          Navigator.pop(context);
-        });
-      },
-    );
-
-    // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
-      title: Text(title),
-      content: Text(msg),
-      actions: [
-        cancelButton,
-      ],
-    );
-
-    // show the dialog
-    showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
+      //initialRoute: '/',
+        home: StreamBuilder<User?>(
+          stream: FirebaseAuth.instance.userChanges(),
+          builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
+            if(snapshot.hasData) {
+              return Home();
+            } else {
+              return Connection();
+            }
+          },
+        )
     );
   }
 }

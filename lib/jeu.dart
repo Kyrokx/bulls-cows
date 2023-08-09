@@ -1,7 +1,13 @@
+import 'dart:async';
 import 'dart:math';
 
+import 'package:bulls_and_cows/Mdels/member.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+import 'Mdels/firebaseServices.dart';
 
 class Jeu extends StatefulWidget {
   @override
@@ -16,8 +22,23 @@ class JeuState extends State<Jeu> {
 
   late List number_array = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
+  late StreamSubscription streamSubscription;
+  Member? member;
+  final current_user = FirebaseAuth.instance.currentUser;
+
+
+
   @override
   void initState() {
+    streamSubscription = FirebaseServices()
+        .fire_user
+        .doc(current_user!.uid)
+        .snapshots()
+        .listen((event) {
+      setState(() {
+        member = Member(event);
+      });
+    });
     controller = TextEditingController()
       ..addListener(() {
         setState(() {});
@@ -28,10 +49,13 @@ class JeuState extends State<Jeu> {
         setState(() {});
       });
     super.initState();
+
+
   }
 
   @override
   void dispose() {
+    streamSubscription.cancel();
     controller.dispose();
     controller2.dispose();
     super.dispose();
@@ -138,7 +162,8 @@ class JeuState extends State<Jeu> {
               ],
             ),
           ),
-        ));
+        )
+    );
   }
 
   List shuffle(List array) {
@@ -209,11 +234,27 @@ class JeuState extends State<Jeu> {
           "Vous avez atteint 60 tentatives. Vous avez perdu ! Le nombre mystère etait ${guess_numbers_choised}",
           true);
     } else if (bulls == 4) {
-      alert(
-          "🎊 | Félicitaions",
-          "Vous avez trouvez le bon nombre qui était ${guess_numbers_choised} en ${tentatives} tentatives",
-          true);
-    }
+
+      if(member!.tentative_record == 0) {
+        FirebaseServices().changeRecord(tentatives);
+        alert(
+            "🎊 | Félicitaions",
+            "Vous avez trouvez le bon nombre qui était ${guess_numbers_choised} en ${tentatives} tentatives \n\n 🏆 | Votre premier record personnel est enregistré à ${tentatives} tentatives",
+            true);
+      } else if(member!.tentative_record > tentatives) {
+        FirebaseServices().changeRecord(tentatives);
+        alert(
+            "🎊 | Félicitaions",
+            "Vous avez trouvez le bon nombre qui était ${guess_numbers_choised} en ${tentatives} tentatives \n\n 🏆 |  Bravo votre nouveau record personnel est de ${tentatives} tentatives",
+            true);
+      } else if (member!.tentative_record < tentatives) {
+        alert(
+            "🎊 | Félicitaions",
+            "Vous avez trouvez le bon nombre qui était ${guess_numbers_choised} en ${tentatives} tentatives \n\n 🏆 | Votre record personnel est toujours de ${member!.tentative_record} tentatives",
+            true);
+      }
+      }
+
   }
 
   Future<void> alert(title, msg, bool oui) async {

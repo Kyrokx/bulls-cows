@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "692500050840",
+    "project_id": "bulls-cows1",
+    "storage_bucket": "bulls-cows1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:692500050840:android:c9f51fc79a31d69ad8f1ed",
+        "android_client_info": {
+          "package_name": "bf.kyrokx.bulls_and_cows"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "692500050840-k66ofs0un79ja9n78louu8dj248tc1q1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCW78vJaSEu8vUIg4y6mJeALqdtsyhXfrs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "692500050840-k66ofs0un79ja9n78louu8dj248tc1q1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
